@@ -4,6 +4,7 @@ package NotePad;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 
 public class List {
 
@@ -64,7 +65,7 @@ public class List {
 			depth.push(dp);
 			
 			String append = "\n";
-			for(int i=0; i<sp; i++){
+			for(int i=1; i<sp; i++){
 				
 				append= append+"\t";
 				
@@ -77,7 +78,7 @@ public class List {
 			int offs = c.getDot();
 			
 			d.insertString(offs, append);
-			offset.push(offs+1+sp);
+			offset.push(offs+1+sp-1);
 		}
 		else{
 			//int l = c.getLineNumber(s);//current line
@@ -125,11 +126,40 @@ public class List {
 		return ;
 	}
 	
-	public void backwards(){
+	public void backwards(MDocument d){
 		
 		//
+		int sp=stack.pop();
+		if(sp==1){
+			return;//bottom level 
+		}
+		sp=sp-1;
+		stack.push(sp);
+		//Now we find depth
+		//we look back through the stack in reverse order and try to find something equal to  sp
+	    //then add one to its depth
+		//if we find nothing its depth equals one
+		Iterator<Integer>  myIt= stack.descendingIterator();
+		Iterator<Integer>  myDeIt= depth.descendingIterator();
+		int dp=1;//default value
+		while(myIt.hasNext()){
+			int temp= myIt.next();
+			int deTemp= myDeIt.next();
+			if(temp==sp)
+			{
+			dp=deTemp;	
+			
+			}
+		}
+		depth.pop();
+		depth.push(dp);
+		////////////////////////////////////////////
 		
-		
+		int offs = offset.pop();
+		String append =dp+".";
+		d.remove(offs-1, 3);
+		d.insertString(offs-1, append);
+		offset.push(offs-1);
 	}
 	
 	public void delete(){
