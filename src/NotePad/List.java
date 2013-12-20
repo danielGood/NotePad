@@ -7,14 +7,16 @@ import java.util.Deque;
 
 public class List {
 
-	private boolean[] active = new boolean[100];//parallel with line
-	private Deque<Integer> stack;//the deque represents the layers of the outline
-	private int curr = 1;//current deque
-	private int[] line = new int[100];//a temporary implementation for line numbers
 	
+	private Deque<Integer> stack;//the dequeue represents the layers of the outline, the 1, A, I, i
+	
+	private Deque<Integer> depth;// this keeps track of the 1, 2, 3 ,4
+	private boolean active;
+	private Deque<Integer> offset;//this keeps track of the offsets
 	List(){
 		 stack = new ArrayDeque<Integer>();
-		 
+		 offset = new ArrayDeque<Integer>();
+		 depth = new ArrayDeque<Integer>();
 	}
 	
 	/*
@@ -28,42 +30,105 @@ public class List {
 	 * Modified Word Wrap
 	 */
 	
-	public String initializeList(String s){
-		//active=true;
+	public void initializeList(String s, Caret c, MDocument d){
+		
 		int i = 1;
-		stack.push(i);
 		
-		String append = "\n 1.";
-		//String append = "<ol> <li> </li> </ol> ";
-		//NotePad.htmlDoc.insertBeforeEnd(i, "<ol> <li> </li> </ol> ");
-		s = s + append;
-		return s;
+		int l= c.getLineNumber(s);
+		Count myCount = new Count(s);
+		int offs = myCount.getCharCountAtLine(l);
+		
+		stack.push(i);
+		depth.push(i);
+		offset.push(offs+1);
+		active = true;
+		String append = "\n1.";
+		d.insertString(offs, append);
+		
+		
+		
+		//s = s + append;
+		return ;
 	}
 	
-	public String newLine(String s){
+	public void newLine(String s, Caret c, MDocument d){
 		//increment the current numeral by 1
+		if(active){
+			//int l= c.getLineNumber(s)+1;//the next line
+			
+			int sp = stack.peek(); 
+			int dp =depth.peek();
+			stack.push(sp);
+			
+			dp++;
+			depth.push(dp);
+			
+			String append = "\n";
+			for(int i=0; i<sp; i++){
+				
+				append= append+"\t";
+				
+			}
+			
+			
+			
+			 append = append + dp + ".";
+			
+			int offs = c.getDot();
+			
+			d.insertString(offs, append);
+			offset.push(offs+1+sp);
+		}
+		else{
+			//int l = c.getLineNumber(s);//current line
+			String append ="\n";
+			int offs = c.getDot();
+			d.insertString(offs, append);
+			
+		}
 		
-		int i = stack.pop();
-		i++;
-		String append ="\n " + i + ".";
-		stack.push(i);
-		s= s+ append;
-		return s;
+		
+		return ;
 	}
 	
-	public String forwards(String s, Caret myCaret){
+	public void forwards(String s, Caret c, MDocument d){
+		
+		if(active){
+			
+			int dp = depth.pop();
+			dp=1;
+			depth.push(dp);
+			
+			int tabCount = stack.pop();//
+			int sp=tabCount+1;
+			stack.push(sp);
+			
+			String append = "\t " +dp;
+			//line dequeue stays the same
+			int lp=offset.pop();
+						
+			d.remove(lp, 2);
+			d.insertString(lp , append);
+			offset.push(lp+1);
+			
+		}
+		else{//when tab is tab
+			
+			String append ="\t";
+			int offs = c.getDot();
+			d.insertString(offs, append);
+			
+		}
 		
 		
 		
-		curr++;
-		int i=1;
-		String append = "\t ";
-		stack.push(i);
-		s= s;
-		return s;
+		return ;
 	}
 	
 	public void backwards(){
+		
+		//
+		
 		
 	}
 	

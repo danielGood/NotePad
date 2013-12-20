@@ -1,4 +1,6 @@
 package NotePad;
+import java.util.Scanner;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Position;
@@ -73,6 +75,35 @@ public class MDocument {
 		}
 	}
 	
+	void remove(int offs, int len){
+		
+		try {
+			myDoc.remove(offs, len);
+		} catch (BadLocationException e) {
+			
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	String getLine(int l){
+		
+		String line = "";
+		int counter = 0;
+		Scanner s = new Scanner(this.getText());
+		while(s.hasNextLine()){
+			counter++;
+			if(l==counter)
+			   line=s.nextLine();
+			else{
+				s.nextLine();
+			}
+		   
+		}
+		s.close();
+		return line;
+	}
 	
 	
 	

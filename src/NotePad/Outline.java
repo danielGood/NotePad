@@ -64,8 +64,8 @@ public class Outline extends NoteFrame  {
 		JButton list = new JButton("List");
 		list.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String s = myList.initializeList(editorPane.getText());
-				editorPane.setText(s);
+				myList.initializeList(editorPane.getText(), myCaret, myDoc);
+				//editorPane.setText(s);
 			}
 		});
 		toolBar.add(list);
@@ -81,8 +81,8 @@ public class Outline extends NoteFrame  {
 		JButton forwards = new JButton("Forward");
 		forwards.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String s = myList.forwards(editorPane.getText(),myCaret);
-				editorPane.setText(s);
+				myList.forwards(editorPane.getText(),myCaret, myDoc);
+				
 			}
 		});
 		toolBar.add(forwards);
@@ -113,8 +113,8 @@ public class Outline extends NoteFrame  {
 			public void actionPerformed( ActionEvent tf )
 	
 	        {
-	        	String s = myList.newLine(editorPane.getText());
-				editorPane.setText(s);
+	        	myList.newLine(editorPane.getText(), myCaret, myDoc);
+				
 	            
 	        } // end method actionPerformed()
 	
@@ -131,8 +131,8 @@ public class Outline extends NoteFrame  {
 			public void actionPerformed( ActionEvent tf )
 	
 	        {
-				String s = myList.forwards(editorPane.getText(),myCaret);
-				editorPane.setText(s);
+				 myList.forwards(editorPane.getText(),myCaret, myDoc);
+				
 	            
 	        } // end method actionPerformed()
 	
