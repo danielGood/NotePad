@@ -43,9 +43,10 @@ public class Caret {
 			
 			
 			sum=sum+line.length();//the sum is the end of line marker
-			
-			if(dot<sum){
+			//System.out.println(sum +" " + dot);
+			if(dot>sum){
 				counter++;
+				
 			}
 			
 		}

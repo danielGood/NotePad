@@ -73,7 +73,7 @@ public class Outline extends NoteFrame  {
 		JButton backwards = new JButton("Backwards");
 		backwards.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				myList.backwards(myDoc);
+				myList.backwards(editorPane.getText(),myCaret, myDoc);
 			}
 		});
 		toolBar.add(backwards);
