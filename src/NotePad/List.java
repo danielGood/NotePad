@@ -2,9 +2,12 @@ package NotePad;
 
 
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Position;
 
 public class List {
@@ -21,6 +24,7 @@ public class List {
 		 
 		 depth = new Vector<Integer>(0);
 		 offset = new Vector<Position>(0);
+		 
 	}
 	
 	/*
@@ -39,19 +43,22 @@ public class List {
 		int i = 1;
 		
 		int l= c.getLineNumber(s);
-		Count myCount = new Count(s);
-		int offs = myCount.getCharCountAtLine(l)+1;
 		
+		
+		//Count myCount = new Count(s);
+		//int offs = myCount.getCharCountAtLine(l);
+		int offs = c.getDot();
 		stack.add(i);
 		depth.add(i);
+		//System.out.println(offs);
 		
-		offset.add(d.createPositon(offs));
 		
 		active = true;
-		String append = "\n1.";
+		String append = "\n 1.";
+		
 		d.insertString(offs, append);
 		
-		
+		offset.add(d.createPositon(offs+1));
 		
 		//s = s + append;
 		return ;
@@ -62,6 +69,9 @@ public class List {
 		if(active){
 			
 			int index = getIndex(c, s);
+			if(index==-1){
+				return;
+			}
 			int sp = stack.get(index); 
 			int dp =depth.get(index);
 			
@@ -70,8 +80,9 @@ public class List {
 			
 			dp++;
 			depth.add(index+1, dp);
+			updateDepth();
 			
-			String append = "\n";
+			String append = "\n"+" ";
 			for(int i=1; i<sp; i++){
 				
 				append= append+"\t";
@@ -85,8 +96,14 @@ public class List {
 			int offs = c.getDot();
 			
 			d.insertString(offs, append);
+			//System.out.println(offs +1 +sp -1);
 			Position p =d.createPositon(offs+1+sp-1);
+			
+			//Position p =d.createPositon(offs+1+sp);
 			offset.add(p);
+			print(d);
+			//debug(d);
+			
 		}
 		else{
 			//int l = c.getLineNumber(s);//current line
@@ -112,7 +129,7 @@ public class List {
 			int sp=tabCount+1;
 			stack.set(index, sp);
 			
-			String append = "\t " +dp;
+			String append = "\t " +dp+".";
 			//line dequeue stays the same
 			//int lp=offset.get(index);
 			Position p =offset.get(index);
@@ -148,7 +165,7 @@ public class List {
 			return;//bottom level 
 		}
 		sp=sp-1;
-		stack.set(index, sp);
+		
 		//Now we find depth
 		//we look back through the stack in reverse order and try to find something equal to  sp
 	    //then add one to its depth
@@ -159,12 +176,14 @@ public class List {
 		while(myIt.hasNext()){
 			int temp= myIt.next();
 			int deTemp= myDeIt.next();
+			
 			if(temp==sp)
 			{
-			dp=deTemp;	
+			dp=deTemp+1;	
 			
 			}
 		}
+		stack.set(index, sp);
 		depth.get(index);
 		depth.set(index, dp);
 		////////////////////////////////////////////
@@ -191,7 +210,7 @@ public class List {
 	
 	int getIndex(Caret c, String s){
 		int i=-1;
-		int line=c.getLineNumber(s);
+		int line=c.getLineNumber(s);//here is the problem
 		int dot = c.getDot();
 		Count myCount = new Count(s);
 		//System.out.println(line);
@@ -223,6 +242,125 @@ public class List {
 	}
 	
 	
+	/*The vector depth is a convenience variable and its value can be derived.
+	 * This methods updates all of the depth vector values.
+	 * 
+	 */
+	
+	void updateDepth(){
+		Deque<Integer> lastDepth = new ArrayDeque<Integer>();
+		//lastDepth is a queue which contains the last depth for that layer of stack
+		int index=0;
+		
+		
+		//iterate through stack vector and reassign depth values
+		Iterator<Integer>  s = stack.iterator();
+		int dp=0;
+		while(s.hasNext()){
+			int newStack = s.next();
+			if(index==0){
+				dp=1;
+				
+			}
+			if(index>0){
+				int sp = lastDepth.size();
+				int last = lastDepth.peek();
+				if(newStack==sp){//enter scenario
+					last++;
+					dp=last;
+					lastDepth.pop();
+					
+				}
+				if(newStack>sp){//forwards scenario
+					dp=1;
+					
+				}
+				if(newStack<sp){//backwards scenario
+					lastDepth.pop();
+					last=lastDepth.pop();
+					last++;
+					dp=last;
+				}
+				
+			}
+			//System.out.println(index +" " +dp +" ");
+			
+			lastDepth.push(dp);
+			depth.set(index, dp);
+			index++;
+		}
+		
+	}
+	
+	
+	//updates numbers
+
+	//dependent on depth and position
+	void print(MDocument d){
+		//iterate depth and position
+		//remove
+		//insert
+		Iterator<Integer>  itDepth = depth.iterator();
+		Iterator<Position>  p = offset.iterator();
+		//System.out.println("length" +d.getLength());
+		
+		int index=0;
+		while(itDepth.hasNext()){
+			int dp =itDepth.next();
+			Position myP =p.next();
+			int x = myP.getOffset();
+			
+			int currDepth= depth.get(index);
+			String str=currDepth+".";
+			
+			//System.out.println("x:" + x);
+			//int line= c.getLineNumber(d.getText());
+			    String dpString =""+dp;
+			    int len=dpString.length();
+			    
+				//System.out.println(index + dp);
+				d.remove(x+1, len+1);
+				
+				x=myP.getOffset();//the offset changed?
+				//System.out.println("x:" + x);
+				d.insertString(x+1, str);
+				x=myP.getOffset();
+				//System.out.println("x:" + x);
+			
+			
+			index++;
+			
+		}
+		
+		
+	}
+	
+	
+	
+	void debug(MDocument d){
+		
+		Iterator<Position>  p = offset.iterator();
+		while(p.hasNext()){
+			
+			Position myP =p.next();
+			int x = myP.getOffset();
+			System.out.println(x);
+			
+		}
+		
+		//now form a list of all of start of dot
+		Count myCount = new Count(d.getText());
+		int line= myCount.getLineCount();
+		System.out.println("done1");
+		for(int i=1;i<line;i++){
+			
+			System.out.println(myCount.getCharCountAtLine(i));
+		}
+		System.out.println("done1");
+		System.out.println("done1");
+		System.out.println("done1");
+	}
+	
 	
 	
 	
@@ -234,10 +372,17 @@ public class List {
 /*Bug Report
  * 
  * 
- * NewLine in the middle of the list doesn't work
- * Backwards stack doesn't work
+ * Middle line functions are not implemented to complemention, i.e., need to code how 
+ * this falls under 
+ * 		Updating numbers
+ * 		Updating the stack
+ *      Updating the depth
+ *      *With Position Offset should be automatic
  * 
  * 
+ * it effects the rest of the list
+ * Also -1 error from getIndex
  * 
- * 
+ * Exception while removing reference
+ * first line bug: on first line press list then enter to get -1 exception
  */

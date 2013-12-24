@@ -1,6 +1,7 @@
 package NotePad;
 import java.util.Scanner;
 
+import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Position;
@@ -12,6 +13,7 @@ import javax.swing.text.Position;
 public class MDocument {
    
 	private static Document myDoc;
+	
 	
 	MDocument(Document d){
 		myDoc=d;
@@ -69,7 +71,7 @@ public class MDocument {
 		try {
 			return myDoc.createPosition(offs);
 		} catch (BadLocationException e) {
-			
+			System.out.println("Badlocationerror for create position");
 			e.printStackTrace();
 			return null;
 		}
@@ -104,6 +106,8 @@ public class MDocument {
 		s.close();
 		return line;
 	}
+	
+	
 	
 	
 	

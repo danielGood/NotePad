@@ -48,9 +48,13 @@ public class Caret {
 				counter++;
 				
 			}
-			
+			sum++;
 		}
 		s2.close();
+		
+		
+		
+		
 		return counter;
 	}
 	
