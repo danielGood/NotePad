@@ -44,7 +44,7 @@ public class MDocument {
 	}
 	
 	
-	
+	//i is offset and l is length
 	 public String getText(int i, int l){
 		try{
 		return myDoc.getText(i, l);
