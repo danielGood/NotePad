@@ -90,6 +90,37 @@ public class Count {
   }
   
   
+  //char count based on start of line
+  public int getStartCount(int l){
+		
+		
+		int myLength = 0;
+		int counter =0;
+		 Scanner s2 = new Scanner(text); 
+		
+		 while(s2.hasNextLine())
+		 {
+			
+			if (counter==(l))
+			{
+				s2.close();
+				return myLength;
+			}
+			else{
+				String s =(s2.nextLine());
+				myLength= myLength+s.length(); 
+				counter++;
+				myLength++;
+			}
+		 }
+		 
+		s2.close();
+		return myLength;
+		
+}
+  
+  
+  
   public int getWordCount(){
 		return wordCount;
 	}

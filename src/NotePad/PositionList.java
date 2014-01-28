@@ -2,8 +2,6 @@ package NotePad;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.text.DefaultCaret;
-import javax.swing.text.Document;
 import javax.swing.text.Position;
 
 

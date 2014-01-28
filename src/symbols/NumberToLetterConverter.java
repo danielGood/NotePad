@@ -6,7 +6,7 @@ import java.util.Vector;
 public class NumberToLetterConverter {
 
 	private Vector<Integer> base26;
-	
+	private String letters ="";
 	
 	
 	NumberToLetterConverter(int i){
@@ -50,8 +50,8 @@ public class NumberToLetterConverter {
 			str=toLetter(thisNum)+str;
 			
 		}
-		
-		System.out.println(str);
+		letters=str;
+		//System.out.println(str);
 	}
 	
 	String toLetter(int i){
@@ -115,5 +115,9 @@ public class NumberToLetterConverter {
 		return str;
 	}
 	
+	
+	String getLetters(){
+		return letters;
+	}
 
 }

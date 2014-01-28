@@ -95,22 +95,19 @@ public class List {
 		int i = 1;
 		
 		int l= c.getLineNumber(s);
-		
-		
-		//Count myCount = new Count(s);
-		//int offs = myCount.getCharCountAtLine(l);
-		int offs = c.getDot();
+		Count myCount =new Count(s);
+		int offs =myCount.getStartCount(l);
+		//int offs = c.getDot();
 		stack.add(i);
 		depth.add(i);
-		//System.out.println(offs);
-		nodeLength.add(3);
 		
+		nodeLength.add(2);
+		String str =" 1.";
 		active = true;
-		String append = "\n 1.";
-		
-		d.insertString(offs, append);
-		
-		offset.add(d.createPositon(offs+1));
+		//System.out.println(l+" "+ offs);
+		d.insertString(offs, str);
+		offset.add(d.createPositon(offs));
+		//print(d);
 		
 		//s = s + append;
 		return ;
@@ -123,45 +120,34 @@ public class List {
 			int index = getIndex(c, s);
 			//System.out.println(index);
 			if(index==-1){
+				System.out.println("index exception");
 				return;
 			}
 			int sp = stack.get(index); 
 			int dp =depth.get(index);
-			int nL=nodeLength.get(index);
-			//System.out.println(dp);
-			
+			int nL=nodeLength.get(index);		
 			stack.add(index+1, sp);
-			nodeLength.add(index+1, nL);
-			dp++;
+			
+	
 			depth.add(index+1, dp);
-			
+			dp++;
 			updateDepth();
-			
-			String append = "\n"+" ";
-			for(int i=1; i<sp; i++){
-				
-				append= append+"\t";
-				
-			}
-			
-			
-			
-			 append = append + dp + ".  ";
-			 //System.out.println(dp);
+			////////////////////////////////
 			int offs = c.getDot();
-			
-			d.insertString(offs, append);
-			//System.out.println(offs +1 +sp -1);
-			Position p =d.createPositon(offs+1+sp-1);
-			
-			//Position p =d.createPositon(offs+1+sp);
+			String str = "\n "+ dp +".";
+			//System.out.println(offs +" " +dp);
+			d.insertString(offs, str);
+			Position p =d.createPositon(offs+1);	
+			int len = str.length()-2;
+			nodeLength.add(index+1, len);
 			offset.add(index+1, p);
-			print(d);
 			//debug(d);
+			print(d);
+			
 			
 		}
 		else{
-			//int l = c.getLineNumber(s);//current line
+			
 			String append ="\n";
 			int offs = c.getDot();
 			d.insertString(offs, append);
@@ -177,28 +163,32 @@ public class List {
 		if(active){
 			int index = getIndex(c, s);
 			
-			int dp=1;
-			depth.set(index, dp);
-			updateDepth();
-			int nL=nodeLength.get(index);
-			nodeLength.set(index, nL+1);
 			int tabCount = stack.get(index);//
 			int sp=tabCount+1;
 			stack.set(index, sp);
 			
-			String append = "\t " +dp+".  ";
-			//line dequeue stays the same
-			//int lp=offset.get(index);
+			
+			int dp=1;
+			depth.set(index, dp);
+			updateDepth();
+			dp=depth.get(index);
+					
+			int nL=nodeLength.get(index);
+			
+			
+			String str = dp+".";
+			for(int i=1; i<sp;i++){
+				str="\t"+str;
+			}
+			
 			Position p =offset.get(index);
 			int lp= p.getOffset();
-			//we added a buffer so lp +1
-			d.remove(lp+1, 2);
-			//System.out.println(d.getText(lp, 2));
-			d.insertString(lp+1 , append);
-			//System.out.println(append);
-			Position p2 = d.createPositon(lp+2);
-			offset.set(index, p2);
-			//print(d);
+			d.remove(lp+1, nL);
+			d.insertString(lp+1, str);
+			
+			
+			nodeLength.set(index, str.length());
+			print(d);
 			
 		}
 		else{//when tab is tab
@@ -224,39 +214,32 @@ public class List {
 			return;//bottom level 
 		}
 		sp=sp-1;
-		int nL=nodeLength.get(index);
-		nodeLength.set(index, nL-1);
-		//Now we find depth
-		//we look back through the stack in reverse order and try to find something equal to  sp
-	    //then add one to its depth
-		//if we find nothing its depth equals one
-		Iterator<Integer>  myIt= stack.iterator();
-		Iterator<Integer>  myDeIt= depth.iterator();
-		int dp=1;//default value
-		while(myIt.hasNext()){
-			int temp= myIt.next();
-			int deTemp= myDeIt.next();
-			
-			if(temp==sp)
-			{
-			dp=deTemp+1;	
-			
-			}
-		}
 		stack.set(index, sp);
-		depth.get(index);
+		
+		
+		int dp=1;
 		depth.set(index, dp);
-		////////////////////////////////////////////
+		updateDepth();
+		dp=depth.get(index);
 		
-		//int offs = offset.get(index);
-		Position p = offset.get(index);
-		int offs = p.getOffset();
-		String append =dp+".";
-		d.remove(offs-1, 3);
-		d.insertString(offs-1, append);
 		
-		Position p2 = d.createPositon(offs-1);
-		offset.set(index, p2);
+		
+		int nL=nodeLength.get(index);
+		//nodeLength.set(index, nL-1);
+		String str = dp+".";
+		for(int i=1; i<sp;i++){
+			str="\t"+str;
+		}
+		
+		Position p =offset.get(index);
+		int lp= p.getOffset();
+		d.remove(lp+1, nL);
+		d.insertString(lp+1, str);
+		
+	    nodeLength.set(index, str.length());
+	
+		
+		print(d);
 	}
 	
 	public void delete(){
@@ -274,7 +257,7 @@ public class List {
 		int dot = c.getDot();
 		Count myCount = new Count(s);
 		//System.out.println(line);
-		int be= myCount.getCharCountAtLine(line-1)+1;
+		int be= myCount.getStartCount(line);
 		/*
 		 * get line number for dot
 		 * get beginning of line for dot
@@ -367,18 +350,7 @@ public class List {
 		Iterator<Integer> myS = stack.iterator();
 		Iterator<Integer> len = nodeLength.iterator();
 		int index=0;
-		/*
-		 * A node should go something like this "\n\t\t 3.  "
-		 * myS is the number of tabs
-		 * For now everyone has a newline 
-		 * Forward and Backwards manipulates an already existing node
-		 * 
-		 * depth is the number
-		 * stack is the rotation icon - not there yet
-		 * 
-		 * the position is at the beginning of the line?
-		 * 
-		 */
+		
 		while(itDepth.hasNext()){
 			int sp = myS.next();
 			int dp =itDepth.next();
@@ -390,21 +362,29 @@ public class List {
 			
 			
 			int currDepth= depth.get(index);
-			String str=currDepth+".  ";
+			String str=currDepth+".";//accounts for 2
 			
 			
-			//tabs in string here
+			for(int i=1; i<sp;i++){
+				str="\t"+str;
+			}
+			int temp = sp-1+2;
+		   // System.out.println("str" +str);
+			//System.out.println(d.getText(x+1, myLen));
+		    int lastOffs=d.getEndPosition().getOffset();
+		    
 			
-			
-			
-			
+				//System.out.println("remove"+d.getText(x+1, myLen));
 				d.remove(x+1, myLen);
-				
+				//System.out.println(str);
+				//System.out.println(x+ " "+ myLen+" "+ " "+ lastOffs);
 				
 				
 				
 				d.insertString(x+1, str);
+				
 				int strLen =str.length();
+				//System.out.println(strLen);
 				nodeLength.set(index, strLen);
 				x=myP.getOffset();
 				//System.out.println("x:" + x);
@@ -480,8 +460,8 @@ public class List {
  * 
  * 
  * 
- *
- *
+ *offsets
+ *(position)(sp-1)(2)
  * 		
  * 
  * 

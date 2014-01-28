@@ -1,7 +1,6 @@
 package NotePad;
 import java.util.Scanner;
 
-import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Position;
@@ -107,6 +106,10 @@ public class MDocument {
 		return line;
 	}
 	
+	Position getEndPosition(){
+		return myDoc.getEndPosition();
+		
+	}
 	
 	
 	
